@@ -3,6 +3,24 @@
   "version": "0.1.0",
   "description": "Self-hostable MCP server for the Lyfta Community API",
   "type": "module",
+  "author": "Julian Kronlachner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jkronlachner/lyfta-mcp.git"
+  },
+  "homepage": "https://github.com/jkronlachner/lyfta-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/jkronlachner/lyfta-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "lyfta",
+    "fitness",
+    "workout",
+    "claude"
+  ],
   "bin": {
     "lyfta-mcp": "dist/stdio.js",
     "lyfta-mcp-http": "dist/http.js"
@@ -17,7 +35,8 @@
     "start:http": "node dist/http.js",
     "test": "vitest run",
     "smoke": "tsx scripts/smoke.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

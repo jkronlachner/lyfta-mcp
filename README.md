@@ -1,5 +1,8 @@
 # lyfta-mcp
 
+[![CI](https://github.com/jkronlachner/lyfta-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/jkronlachner/lyfta-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+
 A self-hostable [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
 the [Lyfta Community API](https://my.lyfta.app/community/api) as tools, so an MCP client
 (Claude Code, Claude Desktop, claude.ai) can read your Lyfta training data and create

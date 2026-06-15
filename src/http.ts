@@ -4,9 +4,9 @@ import { createServer } from "./server.js";
 import { keyContext } from "./key-context.js";
 
 function bearer(req: Request): string | undefined {
-  const h = req.headers.authorization;
-  if (h && h.startsWith("Bearer ")) return h.slice(7).trim() || undefined;
-  return undefined;
+  // RFC 6750: the auth scheme is case-insensitive; tolerate extra whitespace.
+  const m = /^Bearer\s+(.+)$/i.exec(req.headers.authorization ?? "");
+  return m?.[1]?.trim() || undefined;
 }
 
 /** Build the Express app exposing the MCP server over Streamable HTTP. */

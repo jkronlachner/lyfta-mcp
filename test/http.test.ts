@@ -46,6 +46,11 @@ describe("http transport", () => {
     expect(text).toContain("serverInfo");
   });
 
+  it("accepts a case-insensitive scheme (RFC 6750)", async () => {
+    const { status } = await post({ Authorization: "bearer  abc" }, initMsg);
+    expect(status).toBe(200);
+  });
+
   it("returns 405 for GET /mcp", async () => {
     const server = createHttp(createApp());
     await new Promise<void>((r) => server.listen(0, r));

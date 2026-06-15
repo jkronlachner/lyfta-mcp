@@ -1,0 +1,38 @@
+{
+  "name": "lyfta-mcp",
+  "version": "0.1.0",
+  "description": "Self-hostable MCP server for the Lyfta Community API",
+  "type": "module",
+  "bin": {
+    "lyfta-mcp": "dist/stdio.js",
+    "lyfta-mcp-http": "dist/http.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev:stdio": "tsx src/stdio.ts",
+    "dev:http": "tsx src/http.ts",
+    "start:http": "node dist/http.js",
+    "test": "vitest run",
+    "smoke": "tsx scripts/smoke.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "express": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -49,11 +49,15 @@ Lyfta is a workout/strength-training tracker. The Community API is a Bearer-toke
   no transport, no process/env access. Testable in isolation.
 - **`lyfta-client.ts`** — thin typed `fetch` wrapper. Constructed with a key, exposes one
   method per endpoint. Maps HTTP/`status:false` errors to typed errors. Never logs the key.
-- **`key-context.ts`** — `AsyncLocalStorage<string>` holding the current request's key.
-  `getKey()` throws a clear error if absent. This is how a request-scoped key reaches a tool
-  handler without being baked into the server or leaking across concurrent HTTP requests.
-- **`stdio.ts`** — entrypoint. Reads `LYFTA_API_KEY` from env once, runs the whole process
-  inside `keyContext.run(key, …)`, connects `StdioServerTransport`.
+- **`key-context.ts`** — `AsyncLocalStorage<string>` holding the current request's key, plus a
+  process-level default key. `getKey()` returns the ALS store if set, else the default, else
+  throws a clear error. The ALS path serves HTTP (per request); the default serves stdio
+  (one key for the process). This is how a key reaches a tool handler without being baked into
+  the server or leaking across concurrent HTTP requests.
+- **`stdio.ts`** — entrypoint. Reads `LYFTA_API_KEY` from env once and calls `setDefaultKey(key)`,
+  then connects `StdioServerTransport`. (It does *not* wrap `connect()` in `keyContext.run()`:
+  ALS context does not survive the long-lived stdin message listeners, so a process default is
+  used instead.)
 - **`http.ts`** — entrypoint. Express + `StreamableHTTPServerTransport`. Per request: extract
   key from the `Authorization: Bearer …` header, then `keyContext.run(key, () => handle(req))`.
   Returns 401 if the header is missing. Stateless mode (new transport per request).
@@ -68,7 +72,8 @@ other. No global mutable key, no key threaded through every function signature.
 ## Auth Model (locked in)
 
 - **HTTP:** client sends `Authorization: Bearer <lyfta-key>`. Server reads it per request,
-  forwards it to Lyfta, stores nothing. The deployed artifact holds no secret.
+  runs the request inside `keyContext.run(key, …)` (ALS holds for the awaited request/response
+  lifecycle), forwards it to Lyfta, stores nothing. The deployed artifact holds no secret.
 - **stdio:** key from `LYFTA_API_KEY` env in the *local* client config (no remote deployment).
 - The Lyfta key **is** the gate — no separate MCP auth token. An unauthenticated request
   (no header) is rejected with 401 before reaching any tool.

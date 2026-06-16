@@ -57,14 +57,16 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   # Optional: publish to npm on release. Enable by setting repo variable
-  # PUBLISH_NPM=true and adding an NPM_TOKEN secret. Skipped otherwise.
+  # PUBLISH_NPM=true. Auth is via npm Trusted Publishing (OIDC) — no NPM_TOKEN
+  # secret. Configure the trusted publisher for this repo + workflow on npmjs.com
+  # first. Provenance is attached automatically.
   publish-npm:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created == 'true' && vars.PUBLISH_NPM == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # mint OIDC token for npm provenance attestation
+      id-token: write # mint OIDC token for Trusted Publishing + provenance
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -72,7 +74,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
           cache: npm
+      # Trusted Publishing (OIDC) needs npm >= 11.5.1; node 22 ships npm 10.
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -35,6 +35,20 @@ is surfaced to the client with the `Retry-After` value when present.
 Generate one at <https://my.lyfta.app/community/api>. **It is shown once — store it safely.**
 The Coach API tools require a paid coaching plan.
 
+## Quick install
+
+**Claude Code** — one line (stdio, runs locally):
+
+```bash
+claude mcp add lyfta --env LYFTA_API_KEY=YOUR_KEY -- npx -y lyfta-mcp
+```
+
+**Claude Desktop** — paste the [config snippet](#use-over-stdio-local) (no CLI installer).
+
+**ChatGPT** — runs in the cloud and can't spawn a local process, so there's no terminal one-liner.
+Deploy the [HTTP transport](#use-over-http-self-hosted) to a public HTTPS URL, then add it under
+**Settings → Connectors** (Developer Mode) with `Authorization: Bearer <your-lyfta-key>`.
+
 ## Install
 
 Published on [npm](https://www.npmjs.com/package/lyfta-mcp) — **no clone or build required** (needs

@@ -1,6 +1,7 @@
 # lyfta-mcp
 
 [![CI](https://github.com/jkronlachner/lyfta-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/jkronlachner/lyfta-mcp/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/lyfta-mcp.svg)](https://www.npmjs.com/package/lyfta-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 A self-hostable [Model Context Protocol](https://modelcontextprotocol.io) server that exposes
@@ -36,12 +37,18 @@ The Coach API tools require a paid coaching plan.
 
 ## Install
 
+Published on [npm](https://www.npmjs.com/package/lyfta-mcp) — **no clone or build required** (needs
+Node ≥ 20). `npx` fetches and runs it on demand:
+
 ```bash
-git clone https://github.com/jkronlachner/lyfta-mcp.git
-cd lyfta-mcp
-npm install
-npm run build
+npx -y lyfta-mcp        # stdio transport
+npx -y lyfta-mcp-http   # Streamable HTTP transport
 ```
+
+Pin a version with `lyfta-mcp@0.3.0` if you prefer. Prebuilt HTTP images are on GHCR:
+`ghcr.io/jkronlachner/lyfta-mcp`.
+
+Working on the server itself? See **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**.
 
 ## Use over stdio (local)
 
@@ -52,7 +59,7 @@ The key lives only in your local client config — there is no deployment.
 ```bash
 claude mcp add lyfta \
   --env LYFTA_API_KEY=your-lyfta-api-key \
-  -- node /absolute/path/to/lyfta-mcp/dist/stdio.js
+  -- npx -y lyfta-mcp
 ```
 
 **Claude Desktop** (`claude_desktop_config.json`):
@@ -61,8 +68,8 @@ claude mcp add lyfta \
 {
   "mcpServers": {
     "lyfta": {
-      "command": "node",
-      "args": ["/absolute/path/to/lyfta-mcp/dist/stdio.js"],
+      "command": "npx",
+      "args": ["-y", "lyfta-mcp"],
       "env": { "LYFTA_API_KEY": "your-lyfta-api-key" }
     }
   }
@@ -77,8 +84,9 @@ it to Lyfta and stores nothing.
 Run it:
 
 ```bash
-PORT=3000 npm run start:http
-# or: docker build -t lyfta-mcp . && docker run -p 3000:3000 lyfta-mcp
+PORT=3000 npx -y lyfta-mcp-http
+# or via the prebuilt image:
+docker run -p 3000:3000 ghcr.io/jkronlachner/lyfta-mcp:latest
 ```
 
 Connect from Claude Code (replace the URL with your deployed, TLS-terminated endpoint):
@@ -115,17 +123,8 @@ The HTTP transport ignores `LYFTA_API_KEY` — it always uses the per-request he
 
 ## Development
 
-```bash
-npm test          # unit + transport tests (vitest)
-npm run typecheck # tsc --noEmit
-npm run dev:stdio # run stdio from source (needs LYFTA_API_KEY)
-npm run dev:http  # run HTTP from source
-LYFTA_API_KEY=<real> npm run smoke   # live read smoke test against Lyfta
-```
-
-> Note: `npm audit` reports advisories in `esbuild`, pulled in transitively by the `tsup`/`vitest`
-> dev toolchain. These are **dev-only** and are not present in the published `dist/` artifact or the
-> Docker image.
+Building, running from source, tests, and the smoke check live in
+**[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**.
 
 ## Security notes
 

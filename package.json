@@ -1,6 +1,6 @@
 {
   "name": "lyfta-mcp",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Self-hostable MCP server for the Lyfta Community API",
   "type": "module",
   "author": "Julian Kronlachner",

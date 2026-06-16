@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.3.1...lyfta-mcp-v0.3.2) (2026-06-16)
+
+
+### Documentation
+
+* add Quick install section with per-client one-liners ([#10](https://github.com/jkronlachner/lyfta-mcp/issues/10)) ([8f82bc5](https://github.com/jkronlachner/lyfta-mcp/commit/8f82bc59fba4b29a0089a8904eeda1e7ee112ea2))
+* correct npx command for the HTTP bin ([#8](https://github.com/jkronlachner/lyfta-mcp/issues/8)) ([bf1c220](https://github.com/jkronlachner/lyfta-mcp/commit/bf1c22038a2f4b00598bceee2829f85991225fe8))
+
 ## [0.3.1](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.3.0...lyfta-mcp-v0.3.1) (2026-06-16)
 
 

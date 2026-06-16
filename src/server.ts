@@ -1,9 +1,16 @@
+import { readFileSync } from "node:fs";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { LyftaClient, LyftaApiError } from "./lyfta-client.js";
 import { getKey } from "./key-context.js";
 
 const RATE = "Rate limits: 60 req/min, 5000 req/day. All IDs are strings.";
+
+// Single source of truth for the version: package.json sits next to dist/ at
+// runtime (and one level up from src/ in dev), so this resolves in every mode.
+const { version } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as { version: string };
 
 type ToolResult = {
   content: { type: "text"; text: string }[];
@@ -66,7 +73,7 @@ const workoutSchema = z
 
 /** Build a fully-configured MCP server with all Lyfta tools registered. */
 export function createServer(): McpServer {
-  const server = new McpServer({ name: "lyfta-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "lyfta-mcp", version });
 
   server.registerTool(
     "list_workouts",

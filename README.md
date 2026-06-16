@@ -109,6 +109,7 @@ on `/mcp` return `405`.
 | `LYFTA_API_KEY` | stdio | yes | — | Your Lyfta Bearer key |
 | `PORT` | HTTP | no | `3000` | HTTP listen port |
 | `LYFTA_BASE_URL` | both | no | `https://my.lyfta.app` | API base URL override |
+| `LYFTA_TIMEOUT_MS` | both | no | `30000` | Per-request upstream timeout (ms) |
 
 The HTTP transport ignores `LYFTA_API_KEY` — it always uses the per-request header.
 

@@ -54,4 +54,21 @@ describe("LyftaClient", () => {
     const client = new LyftaClient("k", { baseUrl: "https://api.test", fetchImpl });
     await expect(client.listExercises()).rejects.toMatchObject({ status: 429, retryAfter: "30" });
   });
+
+  it("aborts and throws 408 when the upstream hangs past the timeout", async () => {
+    const fetchImpl = vi.fn(
+      (_url: URL, init: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init.signal?.addEventListener("abort", () =>
+            reject(new DOMException("aborted", "AbortError")),
+          );
+        }),
+    );
+    const client = new LyftaClient("k", {
+      baseUrl: "https://api.test",
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      timeoutMs: 10,
+    });
+    await expect(client.listExercises()).rejects.toMatchObject({ status: 408 });
+  });
 });

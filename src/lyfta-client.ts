@@ -13,6 +13,8 @@ export class LyftaApiError extends Error {
 export interface LyftaClientOptions {
   baseUrl?: string;
   fetchImpl?: typeof fetch;
+  /** Per-request timeout in ms. Defaults to LYFTA_TIMEOUT_MS or 30s. */
+  timeoutMs?: number;
 }
 
 type Query = Record<string, string | number | undefined>;
@@ -24,6 +26,7 @@ type Query = Record<string, string | number | undefined>;
 export class LyftaClient {
   private baseUrl: string;
   private fetchImpl: typeof fetch;
+  private timeoutMs: number;
 
   constructor(
     private apiKey: string,
@@ -31,6 +34,7 @@ export class LyftaClient {
   ) {
     this.baseUrl = opts.baseUrl ?? process.env.LYFTA_BASE_URL ?? "https://my.lyfta.app";
     this.fetchImpl = opts.fetchImpl ?? fetch;
+    this.timeoutMs = opts.timeoutMs ?? (Number(process.env.LYFTA_TIMEOUT_MS) || 30_000);
   }
 
   private async request(
@@ -45,15 +49,28 @@ export class LyftaClient {
       }
     }
 
-    const res = await this.fetchImpl(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        Accept: "application/json",
-        ...(opts.body !== undefined ? { "Content-Type": "application/json" } : {}),
-      },
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-    });
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), this.timeoutMs);
+    let res: Response;
+    try {
+      res = await this.fetchImpl(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          Accept: "application/json",
+          ...(opts.body !== undefined ? { "Content-Type": "application/json" } : {}),
+        },
+        body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+        signal: ac.signal,
+      });
+    } catch (e) {
+      if (ac.signal.aborted) {
+        throw new LyftaApiError(408, `Lyfta API request timed out after ${this.timeoutMs}ms`);
+      }
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (res.status === 429) {
       throw new LyftaApiError(

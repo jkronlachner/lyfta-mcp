@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { readFileSync } from "node:fs";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer } from "../src/server.js";
@@ -28,6 +29,14 @@ describe("server tools", () => {
       "list_workout_summaries",
       "list_workouts",
     ]);
+  });
+
+  it("reports the package.json version", async () => {
+    const client = await connect();
+    const pkg = JSON.parse(
+      readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+    ) as { version: string };
+    expect(client.getServerVersion()?.version).toBe(pkg.version);
   });
 
   it("list_exercises calls the API and returns JSON text", async () => {

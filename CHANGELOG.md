@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.2.0...lyfta-mcp-v0.3.0) (2026-06-16)
+
+
+### Features
+
+* per-request upstream timeout, runtime version, npm provenance ([#2](https://github.com/jkronlachner/lyfta-mcp/issues/2)) ([301f428](https://github.com/jkronlachner/lyfta-mcp/commit/301f428783c16c896d281106e8003dfaaf3cb363))
+
 ## [0.2.0](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.1.0...lyfta-mcp-v0.2.0) (2026-06-16)
 
 

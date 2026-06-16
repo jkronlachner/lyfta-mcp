@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.3.0...lyfta-mcp-v0.3.1) (2026-06-16)
+
+
+### Bug Fixes
+
+* start HTTP server when launched via npm bin symlink ([#6](https://github.com/jkronlachner/lyfta-mcp/issues/6)) ([fed2a99](https://github.com/jkronlachner/lyfta-mcp/commit/fed2a99db84181d9854b8c6814f68a9b4e33cd1c))
+
 ## [0.3.0](https://github.com/jkronlachner/lyfta-mcp/compare/lyfta-mcp-v0.2.0...lyfta-mcp-v0.3.0) (2026-06-16)
 
 

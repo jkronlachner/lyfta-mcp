@@ -41,11 +41,12 @@ Published on [npm](https://www.npmjs.com/package/lyfta-mcp) — **no clone or bu
 Node ≥ 20). `npx` fetches and runs it on demand:
 
 ```bash
-npx -y lyfta-mcp        # stdio transport
-npx -y lyfta-mcp-http   # Streamable HTTP transport
+npx -y lyfta-mcp                      # stdio transport
+npx -y -p lyfta-mcp lyfta-mcp-http    # Streamable HTTP transport
 ```
 
-Pin a version with `lyfta-mcp@0.3.0` if you prefer. Prebuilt HTTP images are on GHCR:
+The HTTP bin needs `-p lyfta-mcp` because its name differs from the package name. Pin a version with
+`lyfta-mcp@latest` (or a specific tag) if you prefer. Prebuilt HTTP images are on GHCR:
 `ghcr.io/jkronlachner/lyfta-mcp`.
 
 Working on the server itself? See **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**.
@@ -84,7 +85,7 @@ it to Lyfta and stores nothing.
 Run it:
 
 ```bash
-PORT=3000 npx -y lyfta-mcp-http
+PORT=3000 npx -y -p lyfta-mcp lyfta-mcp-http
 # or via the prebuilt image:
 docker run -p 3000:3000 ghcr.io/jkronlachner/lyfta-mcp:latest
 ```

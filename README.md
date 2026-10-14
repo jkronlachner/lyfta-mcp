@@ -19,13 +19,24 @@ Runs over **two transports** from one codebase:
 
 | Tool | Method | Description |
 |------|--------|-------------|
-| `list_workouts` | GET | Detailed workouts incl. exercises and sets (paginated, limit ≤ 100). |
+| `list_workouts` | GET | Detailed workouts incl. exercises and sets (paginated, limit ≤ 100). Optional `from` / `to` (YYYY-MM-DD, UTC, inclusive). |
 | `list_workout_summaries` | GET | Lightweight workout summaries (paginated, limit ≤ 1000). |
 | `list_exercises` | GET | Catalog of exercises you've performed. |
 | `get_exercise_progress` | GET | Progress over time for one exercise (`exercise_id`, `duration` days). |
+| `search_exercise_library` | GET | Search Lyfta's full exercise catalogue (`search`, `limit`, `offset`). |
+| `list_collections` | GET | Your programs/collections (paginated). |
+| `get_collection` | GET | One program and its workouts; `view` = `summary` (default) or `full` (every workout's exercises and sets). |
+| `list_templates` | GET | Your workout templates/routines (paginated). |
+| `get_template` | GET | One template with its exercises and sets. |
+| `get_schedule` | GET | Planned workouts; `from` / `to` (YYYY-MM-DD, UTC, inclusive; default today to +90 days), `include_completed`. For completed history use `list_workouts`. |
 | `list_clients` | GET | Coach API — your active coaching clients. |
 | `create_collection` | POST | Create a program/collection. |
 | `create_template` | POST | Create a workout template inside a collection. |
+
+Coaches can pass `client_id` to every GET tool except `list_clients` and `search_exercise_library`
+to read a client's data instead of their own; use the client's `client_id` (public id) from
+`list_clients`, not their numeric user id. Dates are checked locally (real `YYYY-MM-DD` day,
+`from` ≤ `to`) before any request is sent. All GET tools are annotated `readOnlyHint: true`.
 
 All IDs are strings. Lyfta enforces rate limits of **60 req/min** and **5,000 req/day**; a `429`
 is surfaced to the client with the `Retry-After` value when present.

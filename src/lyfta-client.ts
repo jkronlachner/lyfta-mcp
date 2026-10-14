@@ -20,6 +20,18 @@ export interface LyftaClientOptions {
 type Query = Record<string, string | number | undefined>;
 
 /**
+ * Encode an id for use as one path segment. Empty, "." and ".." are rejected:
+ * URL resolution would collapse them and silently hit a different endpoint.
+ * A plain Error, not LyftaApiError: Lyfta never saw the request.
+ */
+function pathSegment(id: string): string {
+  if (id === "" || id === "." || id === "..") {
+    throw new Error(`Invalid id: ${JSON.stringify(id)}`);
+  }
+  return encodeURIComponent(id);
+}
+
+/**
  * Thin typed wrapper over the Lyfta Community REST API. Constructed with a key;
  * the key is sent as a Bearer header and never logged.
  */
@@ -45,7 +57,8 @@ export class LyftaClient {
     const url = new URL(path, this.baseUrl);
     if (opts.query) {
       for (const [k, v] of Object.entries(opts.query)) {
-        if (v !== undefined) url.searchParams.set(k, String(v));
+        // "" too: an empty client_id/search means "not given", not "match empty".
+        if (v !== undefined && v !== "") url.searchParams.set(k, String(v));
       }
     }
 
@@ -98,20 +111,55 @@ export class LyftaClient {
     return json;
   }
 
-  listWorkouts(q: { page?: number; limit?: number } = {}) {
+  listWorkouts(
+    q: { page?: number; limit?: number; from?: string; to?: string; client_id?: string } = {},
+  ) {
     return this.request("GET", "/api/v1/workouts", { query: q });
   }
 
-  listWorkoutSummaries(q: { page?: number; limit?: number } = {}) {
+  listWorkoutSummaries(q: { page?: number; limit?: number; client_id?: string } = {}) {
     return this.request("GET", "/api/v1/workouts/summary", { query: q });
   }
 
-  listExercises() {
-    return this.request("GET", "/api/v1/exercises");
+  listExercises(q: { client_id?: string } = {}) {
+    return this.request("GET", "/api/v1/exercises", { query: q });
   }
 
-  getExerciseProgress(q: { exercise_id: string; duration: number }) {
+  getExerciseProgress(q: { exercise_id: string; duration: number; client_id?: string }) {
     return this.request("GET", "/api/v1/exercises/progress", { query: q });
+  }
+
+  listCollections(q: { page?: number; limit?: number; client_id?: string } = {}) {
+    return this.request("GET", "/api/v1/collections", { query: q });
+  }
+
+  // async so a bad id from pathSegment() rejects like an API error, not a sync throw.
+  async getCollection(id: string, q: { view?: "summary" | "full"; client_id?: string } = {}) {
+    return this.request("GET", `/api/v1/collections/${pathSegment(id)}`, { query: q });
+  }
+
+  listTemplates(q: { page?: number; limit?: number; client_id?: string } = {}) {
+    return this.request("GET", "/api/v1/templates", { query: q });
+  }
+
+  // async: see getCollection.
+  async getTemplate(id: string, q: { client_id?: string } = {}) {
+    return this.request("GET", `/api/v1/templates/${pathSegment(id)}`, { query: q });
+  }
+
+  getSchedule(
+    q: { from?: string; to?: string; include_completed?: boolean; client_id?: string } = {},
+  ) {
+    // Only send the flag when set: Lyfta defaults to false, and "false" in a
+    // query string is easy for a server to misread as truthy.
+    const { include_completed, ...rest } = q;
+    return this.request("GET", "/api/v1/schedule", {
+      query: { ...rest, include_completed: include_completed ? "true" : undefined },
+    });
+  }
+
+  searchExerciseLibrary(q: { search?: string; limit?: number; offset?: number } = {}) {
+    return this.request("GET", "/api/v1/exercises/library", { query: q });
   }
 
   listClients() {

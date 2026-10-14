@@ -35,7 +35,7 @@
     "start:http": "node dist/http.js",
     "test": "vitest run",
     "smoke": "tsx scripts/smoke.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

@@ -49,7 +49,9 @@ const setSchema = z
 
 const exerciseSchema = z
   .object({
-    exercise_id: numStr,
+    exercise_id: numStr.describe(
+      "Catalog id from search_exercise_library (data.results[].id) or exercise_id from list_workouts",
+    ),
     excercise_name: z.string().optional(),
     exercise_type: z.string().optional(),
     exercise_image: z.string().optional(),
@@ -105,10 +107,28 @@ export function createServer(): McpServer {
     "list_exercises",
     {
       title: "List performed exercises",
-      description: `Catalog of exercises the user has performed. Note: equipment/body-part/muscle IDs are returned as JSON-stringified arrays. ${RATE}`,
-      inputSchema: {},
+      description: `Catalog of exercises the user has performed, paginated. Note: the live API returns id: null here; to get ids for create_template use search_exercise_library and match by image_name. Equipment/body-part/muscle IDs are returned as JSON-stringified arrays. ${RATE}`,
+      inputSchema: {
+        page: z.number().int().min(1).optional(),
+        limit: z.number().int().min(1).max(100).optional(),
+      },
     },
-    async () => runTool((c) => c.listExercises()),
+    async ({ page, limit }) => runTool((c) => c.listExercises({ page, limit })),
+  );
+
+  server.registerTool(
+    "search_exercise_library",
+    {
+      title: "Search exercise catalog",
+      description: `Search the Lyfta exercise catalog (~7600 exercises) with ids. Use data.results[].id as exercise_id in create_template. One name can map to several variants (e.g. female, banded); pick the one whose image_name matches. Paginate with limit/offset; data.pagination has total and hasMore. ${RATE}`,
+      inputSchema: {
+        search: z.string().optional().describe("Name search, e.g. 'bench press'"),
+        limit: z.number().int().min(1).max(100).optional(),
+        offset: z.number().int().min(0).optional(),
+      },
+    },
+    async ({ search, limit, offset }) =>
+      runTool((c) => c.searchExerciseLibrary({ search, limit, offset })),
   );
 
   server.registerTool(

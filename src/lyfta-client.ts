@@ -106,8 +106,13 @@ export class LyftaClient {
     return this.request("GET", "/api/v1/workouts/summary", { query: q });
   }
 
-  listExercises() {
-    return this.request("GET", "/api/v1/exercises");
+  listExercises(q: { page?: number; limit?: number } = {}) {
+    return this.request("GET", "/api/v1/exercises", { query: q });
+  }
+
+  /** Lyfta exercise catalog. Its `id` is the value create_template expects as `exercise_id`. */
+  searchExerciseLibrary(q: { search?: string; limit?: number; offset?: number } = {}) {
+    return this.request("GET", "/api/v1/exercises/library", { query: q });
   }
 
   getExerciseProgress(q: { exercise_id: string; duration: number }) {

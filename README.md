@@ -21,7 +21,8 @@ Runs over **two transports** from one codebase:
 |------|--------|-------------|
 | `list_workouts` | GET | Detailed workouts incl. exercises and sets (paginated, limit ≤ 100). |
 | `list_workout_summaries` | GET | Lightweight workout summaries (paginated, limit ≤ 1000). |
-| `list_exercises` | GET | Catalog of exercises you've performed. |
+| `list_exercises` | GET | Catalog of exercises you've performed (paginated). The live API returns `id: null` here; use `search_exercise_library` for ids. |
+| `search_exercise_library` | GET | Search the Lyfta exercise catalog (`search`, `limit`, `offset`). Its `id` is the `exercise_id` that `create_template` expects. |
 | `get_exercise_progress` | GET | Progress over time for one exercise (`exercise_id`, `duration` days). |
 | `list_clients` | GET | Coach API — your active coaching clients. |
 | `create_collection` | POST | Create a program/collection. |
